@@ -93,11 +93,34 @@ class Cell {
   }
 
   eat_grass() {
-      //todo переселение
+      if (this.grass < this.rabbit)
+      {
+          var need_rebase = this.rabbit - this.grass;
+          need_rebase = this.take_slots(this.left, need_rebase);
+          need_rebase = this.take_slots(this.up, need_rebase);
+          need_rebase = this.take_slots(this.right, need_rebase);
+          need_rebase = this.take_slots(this.down, need_rebase);
+          this.rabbit = this.grass + need_rebase;
+      }
+
       if (this.grass < this.rabbit) {
         this.grass = 0;
         this.rabbit = 0;
       }
+  }
+
+  take_slots(side, need) {
+      if (side && side.rabbit < 3 && (side.grass > side.rabbit)) {
+        var free = side.grass - side.rabbit;
+        if (free > need) {
+          side.rabbit += need;
+          return 0;
+        } else {
+          side.rabbit += free;
+          return need - free;
+        }
+      }
+      return need;
   }
 
   update_rabbit() {
