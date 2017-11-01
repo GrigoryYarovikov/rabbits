@@ -1,4 +1,4 @@
-FIELD_SIZE = 6;
+FIELD_SIZE = 3;
 FIELD_PX = 650;
 ENABLE_RABBITS = false;
 
@@ -44,16 +44,13 @@ class Cell {
   }
 
   update() {
-
-      if (ENABLE_RABBITS) {
-        this.eat_grass();
-      }
       this.generate_sun();
       this.generate_rain();
 
       if (this.type == CellType.FIELD) {
           this.update_grass();
           if (ENABLE_RABBITS) {
+            this.eat_grass();
             this.update_rabbit();
           }
       }
@@ -96,10 +93,12 @@ class Cell {
       if (this.grass < this.rabbit)
       {
           var need_rebase = this.rabbit - this.grass;
-          need_rebase = this.take_slots(this.left, need_rebase);
-          need_rebase = this.take_slots(this.up, need_rebase);
-          need_rebase = this.take_slots(this.right, need_rebase);
-          need_rebase = this.take_slots(this.down, need_rebase);
+          var base_array = [this.left, this.up, this.right, this.down];
+          this.shuffle_array(base_array);
+          need_rebase = this.take_slots(base_array[0], need_rebase);
+          need_rebase = this.take_slots(base_array[1], need_rebase);
+          need_rebase = this.take_slots(base_array[2], need_rebase);
+          need_rebase = this.take_slots(base_array[3], need_rebase);
           this.rabbit = this.grass + need_rebase;
       }
 
@@ -107,6 +106,15 @@ class Cell {
         this.grass = 0;
         this.rabbit = 0;
       }
+  }
+
+  shuffle_array(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
   }
 
   take_slots(side, need) {
